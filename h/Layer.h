@@ -48,6 +48,12 @@ public:
 	bool getChangeable() const {
 		return changeable;
 	}
+	void setName(string n) {
+		name = n;
+	}
+	string getName() const {
+		return name;
+	}
 	void resizeWidth(int newWidth);//prosiruje sirinu praznim pikselima tog layera
 	void resizeHeight(int newHeight); //prosiruje visinu
 	void fix();
@@ -57,4 +63,5 @@ private:
 	bool active; //ucestvuje u slici
 	bool changeable; //aktivan u operacijama
 	int h, w;
+	string name;
 };

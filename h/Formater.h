@@ -27,6 +27,7 @@ public:
 	void setPix(const vec& pix) {
 		pixels = pix;
 	}
+	virtual string getName(string path) = 0;
 	virtual ~Formater() {};
 	//Formater():p(new vec()),pixels(*p),width(0),height(0){}
 protected:

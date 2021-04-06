@@ -22,7 +22,11 @@ public:
 	
 	Operation* operator[](string name);
 	bool exists(string name) {
-		if (operations.find(name) == operations.end()) return false;
+		if (operations.find(name) == operations.end()) {
+			cout << "ovde usao" << endl;
+			return false;
+
+		}
 		return true;
 	}
 	~OperationMap();
@@ -30,6 +34,12 @@ public:
 		pair<string, Operation*> p(name, composite);
 		operations[name] = composite;
 		if (operations[name] == nullptr) cout << "ne radi" << endl;
+	}
+	bool operationExists(string name) {
+		return operations.find(name)!=operations.end();
+	}
+	void deleteOperation(string name) {
+		operations.erase(name);
 	}
 	friend ostream&operator<<(ostream&o, const OperationMap&);
 	friend class XML;

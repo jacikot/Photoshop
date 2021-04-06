@@ -49,6 +49,15 @@ public:
 	OperationMap* getOperations() {
 		return operations;
 	}
+	bool existsOperation(string name) {
+		return operations->operationExists(name);
+	}
+	int getNumofSelect() {
+		return selections.size();
+	}
+	void deleteOperation(string name) {
+		operations->deleteOperation(name);
+	}
 	~Image();
 private:
 	Image(){}

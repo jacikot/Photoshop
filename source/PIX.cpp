@@ -62,9 +62,7 @@ PIX PIX:: operator %(int p) {
 	PIX pix;
 	for (int i = 0; i < 4; i++) {
 		pix.pixel[i] = pixel[i] % p;
-		if (pix.pixel[i] < 0) { 
-			pix.pixel[i] += p; 
-		}
+		if (pix.pixel[i] < 0) pix.pixel[i] + p;
 	}
 	return pix;
 }

@@ -69,18 +69,20 @@ void XML::exportXML() { //regulisati da se ne brisu fajlovi ako postoji neki sa 
 			l1->append_node(opacity);
 
 			i->loadLayer(k);
-			string p = a + "\\L" + to_string(k++) + ".bmp";
+			k++;
+			//string p = a + "\\" + to_string(k++) + ".bmp";
+			string p = a + "\\" + lay.getName() + ".bmp";
 			cout << p;
-			CheckErrors::saveToExistingFile(p);
+			//CheckErrors::saveToExistingFile(p);
 			i->saveImage(p);
-			text = doc.allocate_string(p.c_str(), strlen(p.c_str()));
 			xml_node<> *pathl = doc.allocate_node(node_element, "path");
+			text = doc.allocate_string(p.c_str(), strlen(p.c_str()));
 			pathl->value(text);
 			l1->append_node(pathl);
 			l->append_node(l1);
 		}
 		root->append_node(l);
-
+		
 		xml_node<> *selections = doc.allocate_node(node_element, "selections");
 		for_each(i->selections.begin(), i->selections.end(), [&doc, &selections](pair<string, Selection*> p) {
 			xml_node<> *selection = doc.allocate_node(node_element, "selection");
@@ -164,7 +166,7 @@ string XML::exportFunction(Operation&o, string directory="") {
 	string s="";
 	if (directory != s) s = directory + "\\";
 	s+=o.getname()+".fun";
-	CheckErrors::saveToExistingFile(s);
+	//CheckErrors::saveToExistingFile(s);
 	ofstream file(s);
 	if (!file) throw OpeningFileFail();
 	file << doc;
@@ -177,6 +179,7 @@ Image* XML::parseXML() {//izbaci pamcenje velicine layera
 	xml_document<> doc;
 	xml_node<> * root;
 	ifstream file (path);
+	
 	if (!file) throw OpeningFileFail();
 	vector<char> buffer((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 	buffer.push_back('\0');

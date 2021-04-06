@@ -8,44 +8,52 @@
 #include<sstream>
 #include"Errors.h"
 #include<string>
+#include<fstream>
 using namespace std;
 
 Main* Main::myMain=nullptr;
 void Main::startProgram(int argc, char* argv[]) {
+	ofstream fx;
+	fx.open("errors.txt");
 	try {
 		if (argc < 3) throw ErrorCommandLineArguments();
 		string imagePath = argv[1];
 		string functionPath = argv[2];
-		Image ix(imagePath);
-		ix.activateLayer(0);
-		ix.SelectForChange(0);
-		XML xml(&ix);
-		XML::parseFunction(functionPath);
+		
+		Image*ix=Image::getProgramContext(argv[1]);
 		regex r("(.*\\\\)*([^\\\.]*)\.fun");
 		smatch res;
 		string dir;
 		string name;
+		bool basicOperation = false;
 		if (regex_match(functionPath, res, r)) {
 			dir = res.str(1);
 			name = res.str(2);
 			cout << name << endl;
 		}
 		else throw FileNameFormatError();
+		XML xml(ix);
+		if (!ix->existsOperation(name)) {
+			basicOperation = true;
+		}
+		XML::parseFunction(functionPath);
 		stringstream ss;
 		ss << name;
-		ix.execute(ss); 
-		ix.loadImage();
-		ix.saveImage(imagePath);
+		ix->execute(ss); 
+		if (basicOperation) ix->deleteOperation(name);
+		ix->exportAll(argv[1]);
 	}
 	catch (ErrorCommandLineArguments e) {
-		cout << e;
+
+		fx << e;
 	}
 	catch (Errors&e) {
-		cout << e;
+		fx << e;
 	}
 	catch (...) {
-
+		fx << "Neka druga greska" << endl;
 	}
+	fx.close();
 
 }
 
@@ -153,7 +161,7 @@ Main::Main():isSaved(false),isEnd(false),isLoaded(false) {
 			cout << "Unesite redni broj sloja koji brisete" << endl <<
 				"Unesite -1 ako zelite da obrisete sve postojece slojeve" << endl;
 			int i;
-			i = CheckErrors::signedIntFromStream(cin);
+			i = CheckErrors::intFromStream(cin);
 			if (i < 0) this->getImage()->deleteAll();
 			else this->getImage()->deleteLayer(i);
 			this->setIsSaved(false);
@@ -477,7 +485,7 @@ Main::Main():isSaved(false),isEnd(false),isLoaded(false) {
 			cout << "Unesite putanju do fajla u kome zelite da sacuvate kontekst programa (xml)" << endl;
 			string path;
 			cin >> path;
-			CheckErrors::saveToExistingFile(path);
+			//CheckErrors::saveToExistingFile(path);
 			this->getImage()->exportAll(path);
 			this->setIsSaved(true);
 		}
@@ -663,6 +671,7 @@ void Main::startProgram() {
 		cout << "6. Kraj" << endl;
 		try {
 			int ind = CheckErrors::intFromStream(cin);
+
 			if (ind < 0 || ind>6) throw InputError();
 			mainMap[ind]();
 		}

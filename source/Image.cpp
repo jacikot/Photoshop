@@ -12,6 +12,7 @@
 #include "Selection.h"
 #include"OperationMap.h"
 #include"XML.h"
+#include <fstream>
 
 using namespace std;
 
@@ -37,9 +38,11 @@ Formater* Image::makeformater(string filename) const {
 Image::Image(string filename, int opacity, bool active, bool changeable):numOfActiveSelection(0) { 
 	Formater* f = makeformater(filename);
 	f->open(filename);
+	string name = f->getName(filename);
 	height = f->getheight();
 	width = f->getwidth();
 	Layer l(f->getpixels(), width, height);
+	l.setName(name);
 	layers.push_back(l);
 	Layer l2(width, height);
 	image = l2.pixels;
@@ -82,6 +85,7 @@ void Image::resizeLayers(int h, int w) {
 
 void Image::addLayer(string filename,int opacity,bool active,bool changeable) { 
 	Formater* f = makeformater(filename);
+	string name = f->getName(filename);
 	f->open(filename);
 	int w = f->getwidth();
 	int h = f->getheight();
@@ -89,6 +93,7 @@ void Image::addLayer(string filename,int opacity,bool active,bool changeable) {
 	if (h < height) l.resizeHeight(height);
 	if (w < width) l.resizeWidth(width);
 	if (h > height || w > width) resizeLayers(h, w);
+	l.setName(name);
 	layers.push_back(l);
 	delete f;
 	numOfLayers++;
@@ -208,6 +213,9 @@ void Image::setLayerOpacity(int value, int ind) {
 
 void Image::loadImage() {
 	for (int i = 0; i < height*width; i++) {//kroz sve piksele
+		if (i == 300) {
+			cout << 300;
+		}
 		int sum = 0;
 		auto last = layers.begin();
 		for (auto j = layers.begin(); j != layers.end(); j++) {
@@ -228,17 +236,20 @@ void Image::loadImage() {
 		}
 		else {
 			image[i] = (*last).pixels[i];
+			if (i == 300) cout << image[i];
 			if (last != layers.begin()) {
 				for (last--; last != layers.begin(); last--) {
 					Layer& cur = *last;
 					if (cur.active) {
 						image[i](cur.pixels[i], cur.opacity);
 					}
+					if (i == 300) cout << image[i];
 				}
 				Layer& cur = *last;
 				if (cur.active) {
 					image[i](cur.pixels[i], cur.opacity);
 				}
+				if (i == 300) cout << image[i];
 			}
 			image[i].pixel[3] = sum;
 		}
@@ -326,7 +337,10 @@ void Image::execute(istream& in) {
 				(any_of(selections.begin(), selections.end(), [i, this](pair<string, Selection*> p) {
 				return p.second->isInActiveSelection(i%getW(), i / getW());
 
-			}))) inSelection[i] = true;
+			}))) {
+				
+				inSelection[i] = true;
+			}
 			else inSelection[i] = false;
 		}
 		//proveri da li je operacija validna??? pre svega

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <regex>
 typedef unsigned int dword;
 typedef unsigned short word;
 typedef class h {
@@ -31,6 +32,18 @@ class BMP :public Formater {
 public:
 	void open(string filename);
 	void save(string filename);
+	static void saveHeader(int w, int h, const char* filename);
+	string getName(string path) override {
+		cout << "ime" << path;
+		regex r(".*\\\\([^\\\.]*)\.bmp");
+		smatch res;
+		string name;
+		if (regex_match(path, res, r)) {
+			cout << "ime" << res.str(1);
+			return res.str(1);
+		}
+		return 0;
+	}
 private:
 	header h;
 	info i;

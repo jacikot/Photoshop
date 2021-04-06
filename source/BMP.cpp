@@ -85,7 +85,58 @@ void BMP::open(string filename) {
 	
 
 }
-
+void BMP::saveHeader(int width, int height, const char* filename) {
+	ofstream file;
+	file.open(filename, std::ios::binary);
+	if (!file) throw OpeningFileFail();
+	short t = 0x4d42;
+	int k;
+	//header
+	cout << "bmp save" << height << " " << width << endl;
+	file.write(reinterpret_cast<char*>(&t), 2);
+	k = height * width * 4 + 122;
+	t = 0;
+	file.write(reinterpret_cast<char*>(&k), 4)
+		.write(reinterpret_cast<char*>(&t), 2)
+		.write(reinterpret_cast<char*>(&t), 2);
+	k = 122;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	//info
+	k = 108;
+	file.write(reinterpret_cast<char*>(&k), 4)
+		.write(reinterpret_cast<char*>(&width), 4)
+		.write(reinterpret_cast<char*>(&height), 4);
+	t = 1;
+	file.write(reinterpret_cast<char*>(&t), 2);
+	k = 0x20;
+	file.write(reinterpret_cast<char*>(&k), 2);
+	k = 3;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = width * height * 4;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = 2835;
+	file.write(reinterpret_cast<char*>(&k), 4)
+		.write(reinterpret_cast<char*>(&k), 4);
+	k = 0;
+	file.write(reinterpret_cast<char*>(&k), 4)
+		.write(reinterpret_cast<char*>(&k), 4);
+	k = 0x00FF0000;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = 0x0000FF00;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = 0x000000FF;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = 0xFF000000;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	k = 0x57696E20;
+	file.write(reinterpret_cast<char*>(&k), 4);
+	char cc[48];
+	for (int k = 0; k < 48; k++) {
+		cc[k] = 0;
+	}
+	file.write(cc, 48);
+	file.close();
+}
 void BMP::save(string filename) {
 	swap();
 	ofstream file;

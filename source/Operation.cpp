@@ -1,5 +1,7 @@
 #include"Operation.h"
 #include"CompositeFunction.h"
+#include <fstream>
+using namespace std;
 int Operation::width = 0;
 
 
@@ -13,7 +15,9 @@ void Operation::exportOp(xml_node<> *root, xml_document<>* doc){
 
 Operation* Operation:: parse(xml_node<> *root, xml_document<>* doc, string name) {
 	Operation*o;
-	if (map->exists(name)) o = (*map)[name];
+	if (map->exists(name)) {
+		o = (*map)[name];
+	}
 	else o = new CompositeFunction();
 	o->parseOperation(root, doc, name);
 	return o;
